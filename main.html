@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Blog</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        nav a { margin-right: 15px; }
+        .article { border-bottom: 1px solid #ddd; padding: 10px 0; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#" onclick="showHome()">Home</a>
+        <a href="#" onclick="loadArticles()">Articles</a>
+    </nav>
+
+    <div id="content">
+        <h1>Welcome to my blog!</h1>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000';
+
+        function showHome() {
+            document.getElementById('content').innerHTML = '<h1>Welcome to my blog!</h1>';
+        }
+
+        function loadArticles() {
+            fetch(`${API_BASE}/articles`)
+                .then(response => response.json())
+                .then(articles => {
+                    let html = '<h1>Articles</h1>';
+                    articles.forEach(article => {
+                        html += `<div class="article">
+                                    <h2><a href="#" onclick="loadArticle('${article.id}')">${article.title}</a></h2>
+                                    <p>${article.description.substring(0, 100)}...</p>
+                                </div>`;
+                    });
+                    document.getElementById('content').innerHTML = html;
+                });
+        }
+
+        function loadArticle(articleId) {
+            fetch(`${API_BASE}/getarticle/${articleId}`)
+                .then(response => response.json())
+                .then(article => {
+                    let html = `<h1>${article.title}</h1>
+                                <p><strong>Date:</strong> ${article.date}</p>
+                                <p>${article.description}</p>
+                                <button onclick="loadArticles()">Back to Articles</button>`;
+                    document.getElementById('content').innerHTML = html;
+                });
+        }
+
+    </script>
+</body>
+</html>
